@@ -1,0 +1,189 @@
+<!--
+[CR 8]. Recursos de HTML semântico e Javascript.
+Uso de tags semânticas, Javascript, eventos e formulários.
+Para atender ao critério, o site deve utilizar:
+- TAGS SEMÂNTICAS: <main>, <header>, <article>, <section>, <nav>, <hgroup>, <figure>, <aside>, <footer>;
+- Javascript (funções, Date, strings, Array, DOM);
+- Eventos (click, submit, focus, keydown/keyup e input);
+- Formulários: Enviar por e-mail os dados com https://formsubmit.co/
+-->
+<!--
+[CR 9]. Integração com API.
+No formulário, integrar com o preenchimento com a API de CEP dos Correios.
+Para atender ao critério, quando o usuário preencher o formulário, obrigatoriamente
+solicitar o CEP e preencher dados de endereço utilizando a API ViaCEP - Webservice CEP e IBGE gratuito.
+-->
+<!--Fontes:
+https://github.com/Odisseu93/buscador-de-cep/blob/main/index.html
+https://github.com/eucesar/JavaScript-consuming-and-handling-data-from-an-API
+https://github.com/0Duarte/Estudo-FetchAPI-com-Via-Cep
+-->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - ConcordSupplies</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/layouts.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/theme.css">
+    <script src="../scripts/theme-switcher.js" defer></script>
+    <script src="../scripts/cep-api.js"></script>
+    <script src="../scripts/validate.js" defer></script>
+</head>
+
+<body class="theme-light">
+    <header class="header">
+        <div class="header__top-bar">
+            <div class="header__contact-info">
+                <span class="header__contact-item">📞 +55-11-4034-7800</span>
+                <span class="header__contact-item">📧 websupport@gmail.com</span>
+            </div>
+            <div class="header__social-icons">
+                <a href="https://www.facebook.com/" target="_blank" title="Facebook" class="header__social-link"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://www.instagram.com/" target="_blank" title="Instagram" class="header__social-link"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://br.linkedin.com/" target="_blank" title="Linkedin" class="header__social-link"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://x.com/i/flow/login" target="_blank" title="X" class="header__social-link"><i class="fa-brands fa-x-twitter"></i></a>
+            </div>
+        </div>
+        <nav class="header__nav">
+            <h1 class="header__logo">ConcordSupplies</h1>
+            <ul class="header__nav-list">
+                <li class="header__nav-item"><a href="../index.html" class="header__nav-link">Home</a></li>
+                <li class="header__nav-item"><a href="products.html" class="header__nav-link">Produtos</a></li>
+                <li class="header__nav-item"><a href="about.html" class="header__nav-link">Sobre Nós</a></li>
+                <li class="header__nav-item"><a href="contact.html" class="header__nav-link">Contato</a></li>
+                <li class="header__nav-item"><a href="register.html" class="header__nav-link">Cadastro</a></li>
+            </ul>
+            <!-- AINDA NAO ESTA LOGANDO -->
+            <div class="header__cart-container">
+                <a href="cart.html" class="header__cart-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="header__cart-count">0</span>
+                </a>
+                <a href="login.html" class="header__button">Login</a>
+                <button class="header__button" id="theme-toggle">Alternar Tema</button>
+            </div>
+
+        </nav>
+    </header>
+    <main>
+        <h2 class="form__title">Cadastro</h2> <!-- Trocar o mail para teste!! -->
+        <form id="signupForm" class="form" action="https://formsubmit.co/maurojircik@gmail.com" method="POST"
+            onsubmit="return validateForm(event)">
+            <div class="form__group">
+                <label for="cpf" class="form__label">CPF/CNPJ</label>
+                <input type="text" id="cpf" name="cpf" placeholder="xxx.xxx.xxx-xx or xx.xxx.xxx.xxxx-xx" required>
+            </div>
+            <div class="form__group">
+                <label for="client-type" class="form__label">Tipo Cliente</label>
+                <select id="client-type" name="client-type">
+                    <option value="Pessoa Jurídica">Pessoa Jurídica</option>
+                    <option value="Pessoa Física">Pessoa Física</option>
+                </select>
+            </div>
+            <div class="form__group">
+                <label for="name" class="form__label">Nome</label>
+                <input type="text" id="name" name="name" required>
+                <small class="form__error-message" id="nameError">Username must be between 3 and 25 characters.</small>
+            </div>
+            <div class="form__group">
+                <label for="cep" class="form__label">Cep</label>
+                <input type="text" id="cep" name="cep" placeholder="00000-000" required>
+            </div>
+            <div class="form__group">
+                <label for="street" class="form__label">Endereço</label>
+                <input type="text" id="street" name="street" readonly>
+            </div>
+            <div class="form__group">
+                <label for="number" class="form__label">Número</label>
+                <input type="number" id="number" name="number" required>
+            </div>
+            <div class="form__group">
+                <label for="state" class="form__label">Estado</label>
+                <input type="text" id="state" name="state" readonly>
+            </div>
+            <div class="form__group">
+                <label for="city" class="form__label">Cidade</label>
+                <input type="text" id="city" name="city" readonly>
+            </div>
+            <div class="form__group">
+                <label for="neighborhood" class="form__label">Bairro</label>
+                <input type="text" id="neighborhood" name="neighborhood" readonly>
+            </div>
+            <div class="form__group">
+                <label for="phone" class="form__label">Telefone</label>
+                <input type="tel" id="phone" name="phone" placeholder="DDD987654321" required>
+            </div>
+            <div class="form__group">
+                <label for="email" class="form__label">Email</label>
+                <input type="email" id="email" name="email" placeholder="mail@example.com" required>
+                <small class="form__error-message" id="emailError">Please enter a valid email address.</small>
+            </div>
+            <div class="form__group">
+                <label for="password" class="form__label">Password:</label>
+                <input type="password" id="password" name="password" class="form__input" placeholder="********"
+                    required>
+                <small class="form__error-message" id="passwordError">Password must have at least 8 characters that
+                    include at least 1 lowercase letter, 1 uppercase letter, 1 number, and 1 special character in
+                    (!@#$%^&*).</small>
+            </div>
+            <div class="form__group">
+                <label for="confirmPassword" class="form__label">Confirm Password:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form__input"
+                    placeholder="Reenter your password" required>
+                <small class="form__error-message" id="confirmPasswordError">Please enter the password again.</small>
+            </div>
+            <input type="hidden" id="formData" name="formData">
+            <input type="hidden" name="_next" value="http://localhost/thankyou.html">
+            <input type="hidden" name="_subject" value="Novo Cadastro">
+            <button type="submit" class="form__button">Salvar</button>
+        </form>
+    </main>
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer__column">
+                <h3 class="footer__title">Links</h3>
+                <ul class="footer__list">
+                    <li class="footer__list-item"><a href="../index.html" class="footer__link">Home</a></li>
+                    <li class="footer__list-item"><a href="../paginas/products.html" class="footer__link">Produtos</a>
+                    </li>
+                    <li class="footer__list-item"><a href="../paginas/about.html" class="footer__link">Sobre Nós</a>
+                    </li>
+                    <li class="footer__list-item"><a href="../paginas/contact.html" class="footer__link">Contato</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer__column">
+                <h3 class="footer__title">Contato</h3>
+                <ul class="footer__list">
+                    <li class="footer__list-item">+55-11-4034-7800</li>
+                    <li class="footer__list-item"><a href="mailto:websupport@gmail.com"
+                            class="footer__link">websupport@gmail.com</a></li>
+                    <li class="footer__list-item">Endereço: Av. Maj. Fernando Valle, 2013</li>
+                    <li class="footer__list-item">Bragança Paulista, São Paulo, Brasil</li>
+                </ul>
+            </div>
+            <div class="footer__column">
+                <h3 class="footer__title">Siga-nos</h3>
+                <div class="footer__social-icons">
+                    <a href="https://www.facebook.com/" target="_blank" title="Facebook" class="footer__social-link"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="https://www.instagram.com/" target="_blank" title="Instagram" class="footer__social-link"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://br.linkedin.com/" target="_blank" title="Linkedin" class="footer__social-link"><i class="fa-brands fa-linkedin"></i></a>
+                    <a href="https://x.com/i/flow/login" target="_blank" title="X" class="footer__social-link"><i class="fa-brands fa-x-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer__bottom">
+            <p class="footer__text">© Copyright 2024 - Concord Supplies. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+    <script src="scripts/validate.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,39 @@
+
+<template>
+<main>
+      <section class="cart-title-container">
+        <h1>Seu Carrinho</h1>
+        <p>Revise seus itens antes de finalizar a compra</p>
+      </section>
+
+      <section class="cart-container">
+        <div class="cart-items">
+          <div class="cart-empty" v-if="cartItems.length === 0">
+            <i class="fas fa-shopping-cart"></i>
+            <p>Seu carrinho está vazio</p>
+            <a href="products.html" class="button">Continuar Comprando</a>
+          </div>
+        </div>
+
+        <div class="cart-summary">
+          <h3>Resumo do Pedido</h3>
+          <div class="summary-details">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span class="subtotal">R$ {{ subtotal.toFixed(2) }}</span>
+            </div>
+            <div class="summary-row">
+              <span>Frete</span>
+              <span class="shipping">R$ {{ shipping.toFixed(2) }}</span>
+            </div>
+            <div class="summary-row total">
+              <span>Total</span>
+              <span class="total-price">R$ {{ total.toFixed(2) }}</span>
+            </div>
+          </div>
+          <a href="checkout.html" class="checkout-button">Finalizar Compra</a>
+          <a href="products.html" class="continue-shopping">Continuar Comprando</a>
+        </div>
+      </section>
+    </main>
+</template>
